@@ -27,11 +27,11 @@
 // characters ``*'' and ``$''.  ``*'' is replaced by the full import path (including the
 // root domain), while ``$'' is replaced by the last part of the import path.
 //
-// The refresh entry specifies an URL, which the generated HTML files will redirect to.
+// The ``refresh'' entry specifies an URL, which the generated HTML files will redirect to.
 // By default, they will redirect to the corresponding godoc.org documentation.
-// No redirect will be created if refresh is empty or not defined.
+// No redirect will be created if ``refresh'' is empty or not defined.
 //
-// Example Config
+// Example config:
 //
 //	[default]
 //		root = rtrn.io
