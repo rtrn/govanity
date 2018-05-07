@@ -12,24 +12,24 @@
 //	[default]
 //		root = <root domain>
 //		repo = <url to repository>
-//		vcs = <vcs>                    # default: git
-//		refresh = <url redirection>    # default: https://godoc.org/*
+//		vcs = <vcs>                     # default: git
+//		redirect = <url redirection>    # default: https://godoc.org/*
 //
 //	[import "path"]
 //		root = ...
 //		repo = ...
 //		vcs = ...
-//		refresh = ...
+//		redirect = ...
 //	[import "another/path"]
 //
 // If the entries for an import section are not defined, they are taken from
-// the default section.  The ``repo'' and ``refresh'' entries can contain the special
+// the default section.  The ``repo'' and ``redirect'' entries can contain the special
 // characters ``*'' and ``$''.  ``*'' is replaced by the full import path (including the
 // root domain), while ``$'' is replaced by the last part of the import path.
 //
-// The ``refresh'' entry specifies an URL, which the generated HTML files will redirect to.
+// The ``redirect'' entry specifies an URL, which the generated HTML files will redirect to.
 // By default, they will redirect to the corresponding godoc.org documentation.
-// No redirect will be created if ``refresh'' is empty or not defined.
+// No redirect will be created if ``redirect'' is empty or not defined.
 //
 // Example config:
 //
@@ -71,10 +71,10 @@ var (
 )
 
 type entry struct {
-	Root    *string
-	Repo    *string
-	VCS     *string
-	Refresh *string
+	Root     *string
+	Repo     *string
+	VCS      *string
+	Redirect *string
 }
 
 var cfg struct {
@@ -98,9 +98,9 @@ func main() {
 		s := "git"
 		cfg.Default.VCS = &s
 	}
-	if cfg.Default.Refresh == nil {
+	if cfg.Default.Redirect == nil {
 		s := "https://godoc.org/*"
-		cfg.Default.Refresh = &s
+		cfg.Default.Redirect = &s
 	}
 
 	govanity()
@@ -123,8 +123,8 @@ func govanity() {
 		if e.VCS == nil {
 			e.VCS = cfg.Default.VCS
 		}
-		if e.Refresh == nil {
-			e.Refresh = cfg.Default.Refresh
+		if e.Redirect == nil {
+			e.Redirect = cfg.Default.Redirect
 		}
 
 		if e.Repo == nil || *e.Repo == "" {
@@ -140,9 +140,9 @@ func govanity() {
 		r := strings.NewReplacer("*", imprt, "$", last)
 		s := r.Replace(*e.Repo)
 		e.Repo = &s
-		if e.Refresh != nil {
-			s := r.Replace(*e.Refresh)
-			e.Refresh = &s
+		if e.Redirect != nil {
+			s := r.Replace(*e.Redirect)
+			e.Redirect = &s
 		}
 	}
 
@@ -160,10 +160,10 @@ var tmpl = template.Must(template.New("main").Parse(`<!DOCTYPE html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <meta name="go-import" content="{{.Import}} {{.VCS}} {{.Repo}}">
-<meta http-equiv="refresh" content="0; url={{.Refresh}}">
+<meta http-equiv="refresh" content="0; url={{.Redirect}}">
 </head>
 <body>
-Redirecting to <a href="{{.Refresh}}">{{.Refresh}}</a>...
+Redirecting to <a href="{{.Redirect}}">{{.Redirect}}</a>...
 </body>
 </html>
 `))
@@ -179,17 +179,17 @@ var tmplnr = template.Must(template.New("main").Parse(`<!DOCTYPE html>
 
 func writeFile(imprt string, e entry) {
 	t := tmpl
-	if e.Refresh == nil || *e.Refresh == "" {
+	if e.Redirect == nil || *e.Redirect == "" {
 		s := ""
-		e.Refresh = &s
+		e.Redirect = &s
 		t = tmplnr
 	}
 	d := struct {
-		Import  string
-		Repo    string
-		VCS     string
-		Refresh string
-	}{imprt, *e.Repo, *e.VCS, *e.Refresh}
+		Import   string
+		Repo     string
+		VCS      string
+		Redirect string
+	}{imprt, *e.Repo, *e.VCS, *e.Redirect}
 
 	var sb strings.Builder
 	err := t.Execute(&sb, d)
