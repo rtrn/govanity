@@ -14,7 +14,7 @@
 //		repo = <url to repository>
 //		vcs = <vcs>                     # default: git
 //		redirect = <url redirection>    # default: https://godoc.org/*
-//		dirs = true | false				# default: true
+//		dirs = true | false		# default: true
 //
 //	[import "path"]
 //		root = ...
@@ -43,7 +43,7 @@
 //
 //	[default]
 //		root = rtrn.io
-//		repo = https://github/com/rtrn/$
+//		repo = https://github.com/rtrn/$
 //
 //	[import "cmd/govanity"]
 //	[import "cmd/uuenc"]
